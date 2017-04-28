@@ -39,23 +39,21 @@ def argument_directory_paths_exists(*input_path):
 
 def return_input_arguments():
     parser = argparse.ArgumentParser(prog='main.py', description='Accept input directories for path monitoring.')
-    parser.add_argument('string1', metavar='source-path', type=str,
+    parser.add_argument('source_directory', metavar='source-path', type=str,
                         help='a directory path representing the source directory.')
-    parser.add_argument('string2', metavar='target-path', type=str,
+    parser.add_argument('target_directory', metavar='target-path', type=str,
                         help='a directory path representing the target directory.')
     args = vars(parser.parse_args())
-    source_directory = args['string1']
-    target_directory = args['string2']
-    return [source_directory, target_directory]
+    return args
 
 
 def main():
-    SOURCE_DIRECTORY = 0
-    TARGET_DIRECTORY = 1
     input_arguments = return_input_arguments()
-    if argument_directory_paths_exists(return_input_arguments()):
-        print("Watching '%s' and sending inputs to '%s'" % (input_arguments[SOURCE_DIRECTORY], input_arguments[TARGET_DIRECTORY]))
-    # return Scan(argv[1], argv[2])
+    source_directory = input_arguments['source_directory']
+    target_directory = input_arguments['target_directory']
+    if argument_directory_paths_exists([source_directory, target_directory]):
+        print("Watching '%s' and sending inputs to '%s'" % (source_directory, target_directory))
+        return Scan(source_directory, target_directory)
 
 
 if __name__ == "__main__":
