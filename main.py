@@ -18,39 +18,7 @@ or the scan will prematurely cancel as soon as the directory is empty. (Current 
 """
 from models import Scan
 import argparse
-from sys import argv
 import os
-
-
-def argument_is_string(argument):
-    try:
-        int(argument)
-        return False
-    except ValueError:
-        return True
-
-
-def time_length_is_valid():
-    try:
-        if not argument_is_string(argv[3]):
-            return True
-    except IndexError:
-        return False
-
-
-def input_is_valid(arguments):
-    argument_length = len(arguments)
-    if argument_length == 4 or argument_length == 3:
-        if False in ([argument_is_string(argument) for argument in arguments[:3]]):
-            print("Ensure arguments are valid paths. (Cannot be a number.)")
-            return False
-        if not time_length_is_valid():
-            print("Time Length not valid.")
-            return False
-        else:
-            return True
-    print("Not enough arguments: %s/%s" % (len(arguments), 3))
-    return False
 
 
 def argument_directory_paths_exists(*input_path):
@@ -69,7 +37,7 @@ def argument_directory_paths_exists(*input_path):
     return True
 
 
-def main():
+def return_input_arguments():
     parser = argparse.ArgumentParser(prog='main.py', description='Accept input directories for path monitoring.')
     parser.add_argument('string1', metavar='source-path', type=str,
                         help='a directory path representing the source directory.')
@@ -78,8 +46,15 @@ def main():
     args = vars(parser.parse_args())
     source_directory = args['string1']
     target_directory = args['string2']
-    if argument_directory_paths_exists([source_directory, target_directory]):
-        print("Watching '%s' and sending inputs to '%s'" % (source_directory, target_directory))
+    return [source_directory, target_directory]
+
+
+def main():
+    SOURCE_DIRECTORY = 0
+    TARGET_DIRECTORY = 1
+    input_arguments = return_input_arguments()
+    if argument_directory_paths_exists(return_input_arguments()):
+        print("Watching '%s' and sending inputs to '%s'" % (input_arguments[SOURCE_DIRECTORY], input_arguments[TARGET_DIRECTORY]))
     # return Scan(argv[1], argv[2])
 
 
