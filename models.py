@@ -43,14 +43,17 @@ class Scan:
             self.visited_folders.append(self.source_dir)
             self.recursive_scan(source_folder_children)
         print("Source directory is empty.")
-        self.exit_scan()
+        # self.exit_scan()
 
     def recursive_scan(self, path_list):
         self.recursion_count += 1
         #print("recursive_scan(%s)" % path_list)
         for active_folder in path_list:
+            # TODO: Add check to see if active_folder is SOURCE or any parent of SOURCE
+
             if not self.source_directory_has_contents():
-                self.exit_scan()
+                # self.exit_scan()
+                self.start_scan()
             if active_folder == self.source_dir:
                 #print("Parent found... exiting.")
                 self.start_scan()
@@ -150,7 +153,8 @@ class Scan:
     def remove_folder(self, source):
         if source == self.source_dir:
             print("Program tried to delete source directory, yo.")
-            exit()
+            # exit()
+            return
         try:
             shutil.rmtree(source)
         except OSError:
