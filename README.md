@@ -28,3 +28,4 @@ python main.py Source Destination
 - Refactor recursive structure for readability.
 - Add logging/maintence features for searching activity history.
 - Add automated tests
+- Add network volatility sensitivity for file system manipulations
