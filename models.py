@@ -6,7 +6,7 @@ import time
 class Scan:
 
     def __init__(self, source, destination):
-        print("Init: %s to %s" % (source, destination))
+        # print("Init: %s to %s" % (source, destination))
         self.source_dir = os.path.abspath(source)
         self.destination_dir = os.path.abspath(destination)
         self.start_time_seconds = time.time()
@@ -15,24 +15,24 @@ class Scan:
         self.visited_folders = []
         self.recursion_count = 0
         self.start_text()
-        # self.monitor_directory(argv[3])
+        self.monitor_directory(5)
 
     def monitor_directory(self, seconds):
         if seconds == 0:
-            print("Syncing directories: once")
+            # print("Syncing directories: once")
             return self.start_scan()
         else:
             loop_length = seconds
-            print("Syncing directories: every %s seconds." % loop_length)
-        while True:
-            try:
-                self.start_scan()
-                time.sleep(loop_length)
-            except KeyboardInterrupt:
-                self.exit_scan()
+            # print("Syncing directories: every %s seconds." % loop_length)
+            while True:
+                try:
+                    self.start_scan()
+                    time.sleep(loop_length)
+                except KeyboardInterrupt:
+                    self.exit_scan()
 
     def start_text(self):
-        print("\nStarting directory monitor/scan at: %s\n" % self.start_time)
+        print("Starting directory monitor/scan at: %s\n" % self.start_time)
 
     def start_scan(self):
         # print("start_scan(%s)" % self)
@@ -63,8 +63,7 @@ class Scan:
             active_folder = os.path.abspath(active_folder)
             self.move_files_in_root(active_folder)
             if active_folder not in self.visited_folders:
-                print()
-                print("FOUND: NEW FOLDER: %s " % os.path.basename(active_folder))
+                print("%s: FOUND (Folder): %s " % (time.strftime("%Y-%m-%d_%H-%M-%S", time.gmtime()), os.path.basename(active_folder)))
                 self.visited_folders.append(active_folder)
                 self.copy_folder(active_folder, self.destination_dir)
             if active_folder in self.visited_folders:
@@ -113,9 +112,8 @@ class Scan:
     @staticmethod
     def file_is_changed_within_5_seconds(source_file):
         last_accessed = os.path.getatime(source_file)
-        print()
-        print("FOUND: %s" % os.path.basename(source_file))
-        print("Waiting 5 seconds.")
+        print("%s: FOUND: %s" % (time.strftime("%Y-%m-%d_%H-%M-%S", time.gmtime()), os.path.basename(source_file)))
+        # print("Waiting 5 seconds.")
         for scan_period in range(0, 4):
             if last_accessed != os.path.getatime(source_file):
                 print("%s has changed" % source_file)
