@@ -1,6 +1,7 @@
 """
-
-Don't spend more than an hour on this project. Create a Python program from scratch that will watch a directory for files and moves them elsewhere when they are 'done' being written. A successful implementation will be able to:
+Title: Directory Monitor
+Author: Darius Strasel
+Objective:
 
 - Detect new files in the directory or any subdirectories recursively
 - If the file size hasn't changed in >5 seconds, move it to a second directory
@@ -9,9 +10,10 @@ Don't spend more than an hour on this project. Create a Python program from scra
 
 Constraints:
 
-Accepts two arguments, the directory to watch, and the destination directory for "finished" files
-Only use libraries built into Python itself (ie. ‘os’, ‘sys’, etc). Nothing from pypi or other external sources.
-Use Python 2.7 or 3+.
+Accepts two arguments, the directory to watch, and the destination directory for "finished" files.
+
+TODO: Add to function exit_scan() to account for looping. For example, if looping, exit() should not be invoked
+or the scan will prematurely cancel as soon as the directory is empty. (Current behavior)
 
 """
 
@@ -22,7 +24,7 @@ from sys import argv
 class Scan:
 
     def __init__(self, source, destination):
-        # print("Init: %s to %s" % (source, destination))
+        print("Init: %s to %s" % (source, destination))
         self.source_dir = os.path.abspath(source)
         self.destination_dir = os.path.abspath(destination)
         self.start_time_seconds = time.time()
@@ -31,7 +33,21 @@ class Scan:
         self.visited_folders = []
         self.recursion_count = 0
         self.start_text()
-        self.start_scan()
+        self.monitor_directory(argv[3])
+
+    def monitor_directory(self, seconds):
+        if seconds == 0:
+            print("Syncing directories: once")
+            return self.start_scan()
+        else:
+            loop_length = seconds
+            print("Syncing directories: every %s seconds." % loop_length)
+        while True:
+            try:
+                self.start_scan()
+                time.sleep(loop_length)
+            except KeyboardInterrupt:
+                self.exit_scan()
 
     def start_text(self):
         print("\nStarting directory monitor/scan at: %s\n" % self.start_time)
@@ -48,7 +64,6 @@ class Scan:
         self.exit_scan()
 
     def recursive_scan(self, path_list):
-        # print()
         self.recursion_count += 1
         #print("recursive_scan(%s)" % path_list)
         for active_folder in path_list:
@@ -158,7 +173,6 @@ class Scan:
             exit()
         try:
             shutil.rmtree(source)
-            # os.rmdir(source)
         except OSError:
             print("Folder contains files. Rmdir FAILED.")
             pass
@@ -175,23 +189,37 @@ def argument_is_string(argument):
     try:
         int(argument)
         return False
-    except:
+    except ValueError:
         return True
 
+
+def time_length_is_valid():
+    try:
+        if not argument_is_string(argv[3]):
+            return True
+    except IndexError:
+        return False
+
+
 def input_is_valid(arguments):
-    if len(arguments) == 3:
-            if False in [argument_is_string(argument) for argument in arguments]:
-                print("Ensure arguments are valid paths. (Cannot be a number.)")
-                return False
-            else:
-                return True
+    argument_length = len(arguments)
+    if argument_length == 4 or argument_length == 3:
+        if False in ([argument_is_string(argument) for argument in arguments[:3]]):
+            print("Ensure arguments are valid paths. (Cannot be a number.)")
+            return False
+        if not time_length_is_valid():
+            print("Time Length not valid.")
+            return False
+        else:
+            return True
     print("Not enough arguments: %s/%s" % (len(arguments), 3))
     return False
 
 
-
 def main():
+    print(input_is_valid(argv))
     if input_is_valid(argv):
+        print(True)
         return Scan(argv[1], argv[2])
 
 
